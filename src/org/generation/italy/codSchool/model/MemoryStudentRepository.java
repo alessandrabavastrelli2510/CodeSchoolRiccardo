@@ -2,7 +2,7 @@ package org.generation.italy.codSchool.model;
 
 import java.util.HashMap;
 
-public class StudentRepository {
+public class MemoryStudentRepository implements AbstractStudentRepository{
      private static HashMap <Integer, Student> students = new HashMap<>();
 
     static{

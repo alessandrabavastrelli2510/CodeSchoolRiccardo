@@ -1,28 +1,55 @@
 package org.generation.italy.codSchool.model;
 
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
 public class UserInterface {
     private Scanner console = new Scanner(System.in);
-    private StudentRepository studentRepo = new StudentRepository();
+    private AbstractStudentRepository studentRepo;
+    //private AbstractStudentRepository studentRepo=StudentRepositoryFactory.createStudentRepository("memo"); //per inversione delle interfaccia
+    //private FileStudentRepository studentRepo = new FileStudentRepository(Configuration.fileName);
     private CourseRepository courseRepo = new CourseRepository();
-
-    public int doMenu(){
+    public UserInterface(AbstractStudentRepository studentRepo){
+        this.studentRepo=studentRepo;
+    }
+    public int doMenu() throws ClassNotFoundException{
+        //FileStudentRepository studentRepo = new FileStudentRepository(Configuration.fileName);
         Scanner console = new Scanner(System.in);
         int choice;
         do{
             printMenu();
             choice = console.nextInt();
             console.nextLine();
-            switch (choice) {
-                case 0->System.out.println("Grazie per aver utilizzato il nostro programma, Arrivederci");
-                case 1->printCourseList();
-                case 2->createNewCourse();
-                case 3->createStudentListForCourse();
-                case 4->addStudentToCourse();
-                case 5->printAverageForCourse();
-                default->System.out.println("Comando non valido");
+            try{
+                switch (choice) {
+                    case 0->System.out.println("Grazie per aver utilizzato il nostro programma, Arrivederci");
+                    case 1->printCourseList();
+                    case 2->createNewCourse();
+                    case 3->createStudentListForCourse();
+                    case 4->addStudentToCourse();
+                    case 5->printAverageForCourse();
+                    case 6->printStudentById();
+                    default->System.out.println("Comando non valido");
+                }
+                
+            //}catch(IOException | ClassNotFoundException e){
+            }catch(IOException e){
+                //e.printStackTrace();
+                System.out.println("il file con i dati degli studenti non esiste.");
+                System.out.println("Inserire il nome di un nuovo file oppure exit per terminare");
+                String answer=console.nextLine();
+                if(answer.equals("exit")){
+                    System.out.println("Terminando il programma.");
+                    return -1;
+                }
+                Configuration.fileName="esisto.txt";
+                studentRepo=new FileStudentRepository(Configuration.fileName);
+                System.out.println("ritentando con il nuovo file"+ Configuration.fileName);
+            }catch(EntityAlreadyExistsException e){
+                System.out.println(e.getMessage());
+                System.out.printf("non possiamo inserire il %s perchè il suo id %d è già registrato. Riprova con un nuovo id",e.getClassName(),e.getId());
             }
             
 
@@ -30,6 +57,7 @@ public class UserInterface {
         console.close();
         return choice;
     }
+    
     private void createNewCourse(){
         Course c = createCourse();
         courseRepo.save(c);
@@ -45,8 +73,16 @@ public class UserInterface {
             3)Lista studenti iscritti per corso
             4)Iscrivere nuovo studente a un corso 
             5)Media voti Studente per corso
+            6)Stampa i dati di uno studente
             Inserisci scelta:
                 """);
+    }
+    private void printStudentById() throws FileNotFoundException, ClassNotFoundException, IOException {
+       System.out.println("inserisci id di uno studente");
+       int idS=console.nextInt();
+       console.nextLine();
+       Student s=studentRepo.findById(idS);
+       System.out.println(s); //se incontra eccezione qui si blocca per la riga prima
     }
 
     public void printCourseList(){

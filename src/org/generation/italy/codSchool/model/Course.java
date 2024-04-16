@@ -2,7 +2,7 @@ package org.generation.italy.codSchool.model;
 
 import java.util.ArrayList;
 
-public class Course {
+public class Course implements Comparable<Course>{
     private int id;
     private String title;
     private Area area;
@@ -36,6 +36,13 @@ public class Course {
     public int getId() {
         return id;
     }
+
+    @Override
+    public int compareTo(Course o) {
+       return this.title.compareTo(o.title);
+    }
+
+  
 
 
 }

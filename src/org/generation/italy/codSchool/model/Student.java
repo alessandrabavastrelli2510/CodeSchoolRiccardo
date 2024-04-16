@@ -57,7 +57,7 @@ public class Student {
     public boolean equals(Object o){
         System.out.println("chiamato equals");
         if(o==null){
-            return false; //hashcode 
+            return false; //hashcode non ti fa inserire i null 
         }
         if(this.getClass()!=o.getClass()){ 
             return false; //generics
